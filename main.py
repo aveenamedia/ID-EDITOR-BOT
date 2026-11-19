@@ -15,7 +15,7 @@ from telegram.ext import (
     filters,
 )
 
-TOKEN = os.getenv("9086611630:AAHkwi-_Fh-Bg6K38R72d0lFDnQKOh-uJG4")
+TOKEN = os.getenv("BOT_TOKEN")
 WORKDIR = Path("/tmp/id_editor")
 WORKDIR.mkdir(exist_ok=True)
 
