@@ -282,7 +282,20 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Hawsha waa la joojiyay.\n/start ku bilow."
     )
 
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"ID EDITOR BOT is running")
 
+    def log_message(self, format, *args):
+        pass
+
+
+def run_health_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    server.serve_forever()
 # MAIN
 def main():
     if not TOKEN:
@@ -302,9 +315,10 @@ def main():
 
     # ERROR HANDLER
     app.add_error_handler(error_handler)
-
-    logger.info("ID EDITOR BOT is starting...")
-    app.run_polling()
+    
+ threading.Thread(target=run_health_server, daemon=True).start()
+ logger.info("ID EDITOR BOT is starting...")
+ app.run_polling()
 
 
 if __name__ == "__main__":
