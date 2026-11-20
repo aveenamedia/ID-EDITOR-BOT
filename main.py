@@ -1,3 +1,4 @@
+
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
@@ -18,7 +19,7 @@ from telegram.ext import (
 
 TOKEN = os.getenv("BOT_TOKEN")
 WORKDIR = Path("/tmp/id_editor")
-WORKDIR.mkdir(exist_ok=True)
+WORKDIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -144,6 +145,7 @@ async def receive_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
     except Exception:
+        logger.exception("Trim error")
         await update.message.reply_text(
             "❌ Waqtiga si sax ah u qor.\n"
             "Tusaale: 00:00:10 00:00:30"
@@ -282,6 +284,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Hawsha waa la joojiyay.\n/start ku bilow."
     )
 
+
+# RENDER HEALTH SERVER
 class HealthHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -296,6 +300,8 @@ def run_health_server():
     port = int(os.environ.get("PORT", 10000))
     server = HTTPServer(("0.0.0.0", port), HealthHandler)
     server.serve_forever()
+
+
 # MAIN
 def main():
     if not TOKEN:
@@ -313,12 +319,16 @@ def main():
     app.add_handler(MessageHandler(filters.AUDIO, receive_audio))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_text))
 
-    # ERROR HANDLER
     app.add_error_handler(error_handler)
-    
-         threading.Thread(target=run_health_server, daemon=True).start()
-        logger.info("ID EDITOR BOT is starting...")
-        app.run_polling()
+
+    threading.Thread(
+        target=run_health_server,
+        daemon=True
+    ).start()
+
+    logger.info("ID EDITOR BOT is starting...")
+    app.run_polling()
+
 
 if __name__ == "__main__":
     main()
