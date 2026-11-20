@@ -317,7 +317,7 @@ def main():
     app.add_error_handler(error_handler)
     
  threading.Thread(target=run_health_server, daemon=True).start()
- logger.info("ID EDITOR BOT is starting...")
+            logger.info("ID EDITOR BOT is starting...")
  app.run_polling()
 
 
